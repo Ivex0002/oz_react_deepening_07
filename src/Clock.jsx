@@ -8,8 +8,52 @@
  * - 현재 시간을 "HH:mm:ss" 형식으로 표시합니다.
  * - 시계가 실행 중일 때 매초마다 시간을 업데이트합니다.
  **/
+
+// 실제 시계처럼 디자인
+// 시침, 분침, 초침을 만들고 deg로 제어
+// 각 침들이 속도가 빠르기 때문에 transition은 짧게 제어
+
+import { useState, useEffect } from 'react';
+import './Clock.css';
+
 function Clock() {
-  return <div className="timer-container"></div>;
+
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const hours = time.getHours() % 12;
+  const minutes = time.getMinutes();
+  const seconds = time.getSeconds();
+
+  const hourDeg = (hours + minutes / 60) * 30;
+  const minuteDeg = (minutes + seconds / 60) * 6;
+  const secondDeg = seconds * 6;
+
+  return (
+    <>
+      <div className="container">
+        <div className="clock">
+              {[...Array(12)].map((_, i) => (
+                <div
+                  key={i}
+                  className="dots"
+                  style={{
+                    transform: `rotate(${i * 30}deg) translate(0, 1rem)`,
+                  }}
+                ></div>
+              ))}
+              <div id='cenDot'></div>
+              <div id="hour" style={{ transform: `rotate(${hourDeg}deg)` }}></div>
+              <div id="min" style={{ transform: `rotate(${minuteDeg}deg)` }}></div>
+              <div id="sec" style={{ transform: `rotate(${secondDeg}deg)` }}></div>
+        </div>
+      </div>
+    </>
+  );
 }
 
 export default Clock;
